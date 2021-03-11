@@ -1,0 +1,51 @@
+#경로 이동
+cd C:\models-master\research\object_detection
+
+#가상환경 실행
+activate object_detection_envs
+
+#model_main.py 에서 학습시키기전 log steps 등 바꾸기
+config = tf.estimator.RunConfig().replace(keep_checkpoint_max = 5, 
+                    log_step_count_steps=100, save_checkpoints_steps=2000)
+
+#학습시키기
+python model_main.py --alsologtostderr --model_dir=faster_rcnn_inception_v2_coco_2018_01_28/trained --pipeline_config_path=faster_rcnn_inception_v2_coco_2018_01_28/faster_rcnn_inception_v2_pets.config
+#inception
+
+python model_main.py --alsologtostderr --model_dir=faster_rcnn_inception_resnet_v2_atrous_oid_v4_2018_12_12/trained --pipeline_config_path=faster_rcnn_inception_resnet_v2_atrous_oid_v4_2018_12_12/pipeline.config
+#inception _ resnet
+
+
+#학습 완료 후 텐서보드로 step당 모델 학습 결과 보기(loss, iou 포함)
+tensorboard --logdir=faster_rcnn_inception_v2_coco_2018_01_28/trained
+
+
+tensorboard --logdir=faster_rcnn_inception_resnet_v2_atrous_oid_v4_2018_12_12/trained
+
+
+
+#model.ckpy-XXXX  << XXXX에 가장 마지막에 학습된 step 넣어줌    (모델 파일 pb로 생성)
+python export_inference_graph.py --input_type image_tensor --pipeline_config_path faster_rcnn_inception_v2_coco_2018_01_28/faster_rcnn_inception_v2_pets.config --trained_checkpoint_prefix faster_rcnn_inception_v2_coco_2018_01_28/trained/model.ckpt-XXXX --output_directory faster_rcnn_inception_v2_coco_2018_01_28/trained/inference_graph 
+
+​
+python export_inference_graph.py --input_type=image_tensor --pipeline_config_path=faster_rcnn_inception_resnet_v2_atrous_oid_v4_2018_12_12/faster_rcnn_inception_v2_pets.config --trained_checkpoint_prefix=faster_rcnn_inception_resnet_v2_atrous_oid_v4_2018_12_12/trained/model.ckpt-XXXX --output_directory=faster_rcnn_inception_resnet_v2_atrous_oid_v4_2018_12_12/trained/inference_graph 
+
+
+
+참조목록
+https://github.com/ramkumarperumal/tensorflow_object_detection_api_stanford_dog_breed/blob/master/stanford_dog_breed_detection.ipynb
+
+https://github.com/EdjeElectronics/TensorFlow-Object-Detection-API-Tutorial-Train-Multiple-Objects-Windows-10/tree/master/translate
+
+https://github.com/krestovolt/cat-dog-breed-detection
+
+http://solarisailab.com/archives/2422
+
+https://github.com/AdityaPai2398/Tensorflow-OpenCV-for-Live-Camera/blob/master/faster_rcnn_inception_resnet_v2_atrous_oid.config
+
+https://stackoverflow.com/questions/50027635/show-more-images-in-tensorboard-tensorflow-object-detection
+
+
+pre-model 다운로드 경로
+
+https://github.com/tensorflow/models/blob/master/research/object_detection/g3doc/tf1_detection_zoo.md
